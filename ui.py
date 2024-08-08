@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from excel import make_certificates  # Make sure `excel.py` is in the same directory or adjust the import
+from excel import make_certificates, preview_certificate  # Make sure `excel.py` is in the same directory or adjust the import
 
 st.title('Certificate Generator')
 
@@ -12,6 +12,24 @@ uploaded_template = st.file_uploader("Choose a template image", type=["png", "jp
 
 # Input for custom output directory
 output_dir = st.text_input("Enter the output directory", "out")
+
+# Input for vertical offset
+vertical_offset = st.slider("Adjust the vertical position of the name", -200, 200, 0)
+
+# Input for font size
+font_size = st.slider("Select the font size for the name", 20, 200, 80)
+
+# Name for preview
+preview_name = st.text_input("Enter a name to preview the certificate", "A Akhil")
+
+if uploaded_template and preview_name:
+    # Save the uploaded template to a temporary file
+    with open("temp_template.png", "wb") as f:
+        f.write(uploaded_template.read())
+
+    # Display preview
+    preview_image = preview_certificate("temp_template.png", preview_name, vertical_offset, font_size)
+    st.image(preview_image, caption="Certificate Preview", use_column_width=True)
 
 if uploaded_file and uploaded_template:
     df = pd.read_excel(uploaded_file, sheet_name=None)
@@ -30,12 +48,8 @@ if uploaded_file and uploaded_template:
     if st.button("Generate Certificates"):
         if name_column and uploaded_template:
             with st.spinner("Generating certificates..."):
-                # Save the uploaded template to a temporary file
-                with open("temp_template.png", "wb") as f:
-                    f.write(uploaded_template.read())
-
-                # Call the function with the temporary template file and custom output directory
-                make_certificates(df, name_column, "temp_template.png", output_dir)
+                # Call the function with the template file and custom output directory
+                make_certificates(df, name_column, "temp_template.png", output_dir, vertical_offset, font_size)
 
                 st.success("Certificates generated successfully.")
         else:
