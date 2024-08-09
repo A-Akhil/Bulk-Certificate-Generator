@@ -1,6 +1,8 @@
+import os
 import streamlit as st
 import pandas as pd
-from excel import make_certificates, preview_certificate  # Make sure `excel.py` is in the same directory or adjust the import
+import matplotlib.font_manager as fm  # For cross-platform font management
+from excel import make_certificates, preview_certificate
 
 st.title('Certificate Generator')
 
@@ -19,6 +21,11 @@ vertical_offset = st.slider("Adjust the vertical position of the name", -200, 20
 # Input for font size
 font_size = st.slider("Select the font size for the name", 20, 200, 80)
 
+# Get all system fonts
+fonts = fm.findSystemFonts(fontext='ttf')
+font_names = {os.path.basename(font).split('.')[0]: font for font in fonts}
+font_choice = st.selectbox("Select a font", list(font_names.keys()))
+
 # Name for preview
 preview_name = st.text_input("Enter a name to preview the certificate", "A Akhil")
 
@@ -28,7 +35,7 @@ if uploaded_template and preview_name:
         f.write(uploaded_template.read())
 
     # Display preview
-    preview_image = preview_certificate("temp_template.png", preview_name, vertical_offset, font_size)
+    preview_image = preview_certificate("temp_template.png", preview_name, vertical_offset, font_size, font_names[font_choice])
     st.image(preview_image, caption="Certificate Preview", use_column_width=True)
 
 if uploaded_file and uploaded_template:
@@ -49,7 +56,7 @@ if uploaded_file and uploaded_template:
         if name_column and uploaded_template:
             with st.spinner("Generating certificates..."):
                 # Call the function with the template file and custom output directory
-                make_certificates(df, name_column, "temp_template.png", output_dir, vertical_offset, font_size)
+                make_certificates(df, name_column, "temp_template.png", output_dir, vertical_offset, font_size, font_names[font_choice])
 
                 st.success("Certificates generated successfully.")
         else:

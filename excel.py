@@ -1,17 +1,17 @@
 import pandas as pd
 from PIL import Image, ImageFont, ImageDraw
 import os
+import matplotlib.font_manager as fm  # For cross-platform font management
 
-# Locate your font
-FONT_NAME = "/usr/share/fonts/TTF/times.ttf"
 FONT_COLOR = "#000000"
 
-def make_certificates(df, name_column, template_file, output_dir, vertical_offset, font_size):
+def make_certificates(df, name_column, template_file, output_dir, vertical_offset, font_size, font_name):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
     names = df[name_column].tolist()
-    font = ImageFont.truetype(FONT_NAME, font_size)
+    font_path = font_name  # font_name already contains the correct font path
+    font = ImageFont.truetype(font_path, font_size)
 
     for name in names:
         name = str(name).upper()  # Change all names to capital letters
@@ -33,8 +33,9 @@ def make_certificates(df, name_column, template_file, output_dir, vertical_offse
         print('Saving Certificate for:', name)
 
 
-def preview_certificate(template_file, name, vertical_offset, font_size):
-    font = ImageFont.truetype(FONT_NAME, font_size)
+def preview_certificate(template_file, name, vertical_offset, font_size, font_name):
+    font_path = font_name  # font_name already contains the correct font path
+    font = ImageFont.truetype(font_path, font_size)
     name = str(name).upper()
 
     template = Image.open(template_file)
