@@ -5,12 +5,11 @@ import matplotlib.font_manager as fm  # For cross-platform font management
 
 FONT_COLOR = "#000000"
 
-def make_certificates(df, name_column, template_file, output_dir, vertical_offset, font_size, font_name):
+def make_certificates(df, name_column, template_file, output_dir, vertical_offset, font_size, font_path):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
     names = df[name_column].tolist()
-    font_path = font_name  # font_name already contains the correct font path
     font = ImageFont.truetype(font_path, font_size)
 
     for name in names:
@@ -33,8 +32,7 @@ def make_certificates(df, name_column, template_file, output_dir, vertical_offse
         print('Saving Certificate for:', name)
 
 
-def preview_certificate(template_file, name, vertical_offset, font_size, font_name):
-    font_path = font_name  # font_name already contains the correct font path
+def preview_certificate(template_file, name, vertical_offset, font_size, font_path):
     font = ImageFont.truetype(font_path, font_size)
     name = str(name).upper()
 

@@ -1,13 +1,14 @@
 import os
 import streamlit as st
 import pandas as pd
-import matplotlib.font_manager as fm  # For cross-platform font management
+import matplotlib.font_manager as fm
 from excel import make_certificates, preview_certificate
+from text import make_certificates_txt  # Import the new function
 
 st.title('Certificate Generator')
 
-# Upload Excel file
-uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
+# Upload file
+uploaded_file = st.file_uploader("Choose a file", type=["xlsx", "csv", "txt"])
 
 # Upload template file
 uploaded_template = st.file_uploader("Choose a template image", type=["png", "jpg", "jpeg"])
@@ -35,31 +36,61 @@ if uploaded_template and preview_name:
         f.write(uploaded_template.read())
 
     # Display preview
-    preview_image = preview_certificate("temp_template.png", preview_name, vertical_offset, font_size, font_names[font_choice])
+    preview_image = preview_certificate("temp_template.png", preview_name, vertical_offset, font_size,
+                                        font_names[font_choice])
     st.image(preview_image, caption="Certificate Preview", use_column_width=True)
 
 if uploaded_file and uploaded_template:
-    df = pd.read_excel(uploaded_file, sheet_name=None)
-    sheet_names = df.keys()
+    file_extension = uploaded_file.name.split('.')[-1]
 
-    st.write("Sheet names:", sheet_names)
+    if file_extension in ['xlsx', 'xls']:
+        # Load Excel file
+        df = pd.read_excel(uploaded_file, sheet_name=None)
+        sheet_names = df.keys()
+        selected_sheet = st.selectbox("Select a sheet", sheet_names)
+        df = df[selected_sheet]
+        columns = df.columns.tolist()
+        st.write("Available columns:", columns)
+        name_column = st.selectbox("Select the column with names", columns)
 
-    selected_sheet = st.selectbox("Select a sheet", sheet_names)
-    df = df[selected_sheet]
+        if st.button("Generate Certificates"):
+            if name_column and uploaded_template:
+                with st.spinner("Generating certificates..."):
+                    make_certificates(df, name_column, "temp_template.png", output_dir, vertical_offset, font_size,
+                                      font_names[font_choice])
+                    st.success("Certificates generated successfully.")
+            else:
+                st.error("Please select a column and upload a template.")
 
-    columns = df.columns.tolist()
-    st.write("Available columns:", columns)
+    elif file_extension == 'csv':
+        # Load CSV file
+        df = pd.read_csv(uploaded_file)
+        columns = df.columns.tolist()
+        st.write("Available columns:", columns)
+        name_column = st.selectbox("Select the column with names", columns)
 
-    name_column = st.selectbox("Select the column with names", columns)
+        if st.button("Generate Certificates"):
+            if name_column and uploaded_template:
+                with st.spinner("Generating certificates..."):
+                    make_certificates(df, name_column, "temp_template.png", output_dir, vertical_offset, font_size,
+                                      font_names[font_choice])
+                    st.success("Certificates generated successfully.")
+            else:
+                st.error("Please select a column and upload a template.")
 
-    if st.button("Generate Certificates"):
-        if name_column and uploaded_template:
-            with st.spinner("Generating certificates..."):
-                # Call the function with the template file and custom output directory
-                make_certificates(df, name_column, "temp_template.png", output_dir, vertical_offset, font_size, font_names[font_choice])
+    elif file_extension == 'txt':
+        # Save the uploaded .txt file to a temporary location
+        temp_txt_path = "temp_file.txt"
+        with open(temp_txt_path, "wb") as f:
+            f.write(uploaded_file.read())
 
-                st.success("Certificates generated successfully.")
-        else:
-            st.error("Please select a column and upload a template.")
+        if st.button("Generate Certificates"):
+            if uploaded_template:
+                with st.spinner("Generating certificates..."):
+                    make_certificates_txt(temp_txt_path, "temp_template.png", output_dir, vertical_offset, font_size,
+                                          font_names[font_choice])
+                    st.success("Certificates generated successfully.")
+            else:
+                st.error("Please upload a template.")
 else:
-    st.info("Please upload both an Excel file and a template image.")
+    st.info("Please upload both a file and a template image.")
