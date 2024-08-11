@@ -27,10 +27,18 @@ def make_certificates(df, name_column, template_file, output_dir, vertical_offse
         # Apply the user-defined vertical offset
         draw.text(((width - text_width) / 2, (height - text_height) / 2 + vertical_offset), name, fill=FONT_COLOR, font=font)
 
-        output_file = os.path.join(output_dir, name + ".png")
-        image_source.save(output_file)
-        print('Saving Certificate for:', name)
+        output_file = os.path.join(output_dir, f"{name}.png")
 
+        try:
+            image_source.save(output_file)
+            print('Saving Certificate for:', name)
+        except Exception as e:
+            print(f"Error saving {output_file}: {e}")
+
+    # Delete the temporary file if it exists
+    if os.path.exists(template_file):
+        os.remove(template_file)
+        print(f"Deleted temporary file: {template_file}")
 
 def preview_certificate(template_file, name, vertical_offset, font_size, font_path):
     font = ImageFont.truetype(font_path, font_size)
