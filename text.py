@@ -7,6 +7,10 @@ def make_certificates_txt(file_path, template_file, output_dir, vertical_offset,
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
+    if not os.path.exists(template_file):
+        print(f"Template file not found: {template_file}")
+        return
+
     with open(file_path, "r") as file:
         names = file.read().splitlines()
 
@@ -43,3 +47,18 @@ def make_certificates_txt(file_path, template_file, output_dir, vertical_offset,
             print('Saving Certificate for:', name)
         except Exception as e:
             print(f"Error saving {output_file}: {e}")
+
+    # Delete the template file after processing all names
+    if os.path.exists(template_file):
+        os.remove(template_file)
+        print(f"Deleted template file: {template_file}")
+    else:
+        print(f"Template file already deleted or not found: {template_file}")
+
+    # Delete the temp_file.txt after processing
+    temp_file = "temp_file.txt"  # Ensure this matches the actual temp file path
+    if os.path.exists(temp_file):
+        os.remove(temp_file)
+        print(f"Deleted temporary file: {temp_file}")
+    else:
+        print(f"Temporary file already deleted or not found: {temp_file}")
