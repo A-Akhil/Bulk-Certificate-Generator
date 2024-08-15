@@ -1,6 +1,8 @@
 import os
 import streamlit as st
 import pandas as pd
+import zipfile
+import shutil
 import matplotlib.font_manager as fm
 from excel import make_certificates, preview_certificate
 from text import make_certificates_txt
@@ -14,7 +16,11 @@ uploaded_file = st.file_uploader("Choose a file", type=["xlsx", "csv", "txt"])
 uploaded_template = st.file_uploader("Choose a template image", type=["png", "jpg", "jpeg"])
 
 # Input for custom output directory
-output_dir = st.text_input("Enter the output directory", "out")
+save_option = st.radio("Choose how to save the certificates", ('Save in Folder', 'Download as ZIP'))
+if save_option == 'Save in Folder':
+    output_dir = st.text_input("Enter the output directory", "out")
+else:
+    output_dir = "certificates_temp"  # Temporary folder for ZIP creation
 
 # Input for vertical and horizontal offsets
 vertical_offset = st.slider("Adjust the vertical position of the name", -200, 200, 0)
@@ -41,6 +47,9 @@ if uploaded_template and preview_name:
                                         font_names[font_choice])
     st.image(preview_image, caption="Certificate Preview", use_column_width=True)
 
+def zip_folder(folder_path, output_path):
+    shutil.make_archive(output_path, 'zip', folder_path)
+
 if uploaded_file and uploaded_template:
     file_extension = uploaded_file.name.split('.')[-1]
 
@@ -60,6 +69,11 @@ if uploaded_file and uploaded_template:
                     make_certificates(df, name_column, "temp_template.png", output_dir, vertical_offset, horizontal_offset, font_size,
                                       font_names[font_choice])
                     st.success("Certificates generated successfully.")
+                    if save_option == 'Download as ZIP':
+                        zip_folder(output_dir, 'certificates')
+                        with open('certificates.zip', 'rb') as f:
+                            st.download_button('Download ZIP', f, file_name='certificates.zip')
+                        shutil.rmtree(output_dir)  # Clean up temporary folder
             else:
                 st.error("Please select a column and upload a template.")
 
@@ -76,6 +90,11 @@ if uploaded_file and uploaded_template:
                     make_certificates(df, name_column, "temp_template.png", output_dir, vertical_offset, horizontal_offset, font_size,
                                       font_names[font_choice])
                     st.success("Certificates generated successfully.")
+                    if save_option == 'Download as ZIP':
+                        zip_folder(output_dir, 'certificates')
+                        with open('certificates.zip', 'rb') as f:
+                            st.download_button('Download ZIP', f, file_name='certificates.zip')
+                        shutil.rmtree(output_dir)  # Clean up temporary folder
             else:
                 st.error("Please select a column and upload a template.")
 
@@ -91,6 +110,11 @@ if uploaded_file and uploaded_template:
                     make_certificates_txt(temp_txt_path, "temp_template.png", output_dir, vertical_offset, horizontal_offset, font_size,
                                           font_names[font_choice])
                     st.success("Certificates generated successfully.")
+                    if save_option == 'Download as ZIP':
+                        zip_folder(output_dir, 'certificates')
+                        with open('certificates.zip', 'rb') as f:
+                            st.download_button('Download ZIP', f, file_name='certificates.zip')
+                        shutil.rmtree(output_dir)  # Clean up temporary folder
             else:
                 st.error("Please upload a template.")
 else:
