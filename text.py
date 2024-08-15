@@ -3,7 +3,7 @@ import os
 
 FONT_COLOR = "#000000"
 
-def make_certificates_txt(file_path, template_file, output_dir, vertical_offset, font_size, font_path):
+def make_certificates_txt(file_path, template_file, output_dir, vertical_offset, horizontal_offset, font_size, font_path):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -32,9 +32,9 @@ def make_certificates_txt(file_path, template_file, output_dir, vertical_offset,
         text_bbox = draw.textbbox((0, 0), name, font=font)
         text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
 
-        # Apply the user-defined vertical offset
-        draw.text(((width - text_width) / 2, (height - text_height) / 2 + vertical_offset), name, fill=FONT_COLOR,
-                  font=font)
+        # Apply the user-defined vertical and horizontal offsets
+        draw.text(((width - text_width) / 2 + horizontal_offset, (height - text_height) / 2 + vertical_offset), name,
+                  fill=FONT_COLOR, font=font)
 
         output_file = os.path.join(output_dir, f"{name}.png")
 

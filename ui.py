@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.font_manager as fm
 from excel import make_certificates, preview_certificate
-from text import make_certificates_txt  # Import the new function
+from text import make_certificates_txt
 
 st.title('Certificate Generator')
 
@@ -16,8 +16,9 @@ uploaded_template = st.file_uploader("Choose a template image", type=["png", "jp
 # Input for custom output directory
 output_dir = st.text_input("Enter the output directory", "out")
 
-# Input for vertical offset
+# Input for vertical and horizontal offsets
 vertical_offset = st.slider("Adjust the vertical position of the name", -200, 200, 0)
+horizontal_offset = st.slider("Adjust the horizontal position of the name", -200, 200, 0)
 
 # Input for font size
 font_size = st.slider("Select the font size for the name", 20, 200, 80)
@@ -36,7 +37,7 @@ if uploaded_template and preview_name:
         f.write(uploaded_template.read())
 
     # Display preview
-    preview_image = preview_certificate("temp_template.png", preview_name, vertical_offset, font_size,
+    preview_image = preview_certificate("temp_template.png", preview_name, vertical_offset, horizontal_offset, font_size,
                                         font_names[font_choice])
     st.image(preview_image, caption="Certificate Preview", use_column_width=True)
 
@@ -56,7 +57,7 @@ if uploaded_file and uploaded_template:
         if st.button("Generate Certificates"):
             if name_column and uploaded_template:
                 with st.spinner("Generating certificates..."):
-                    make_certificates(df, name_column, "temp_template.png", output_dir, vertical_offset, font_size,
+                    make_certificates(df, name_column, "temp_template.png", output_dir, vertical_offset, horizontal_offset, font_size,
                                       font_names[font_choice])
                     st.success("Certificates generated successfully.")
             else:
@@ -72,7 +73,7 @@ if uploaded_file and uploaded_template:
         if st.button("Generate Certificates"):
             if name_column and uploaded_template:
                 with st.spinner("Generating certificates..."):
-                    make_certificates(df, name_column, "temp_template.png", output_dir, vertical_offset, font_size,
+                    make_certificates(df, name_column, "temp_template.png", output_dir, vertical_offset, horizontal_offset, font_size,
                                       font_names[font_choice])
                     st.success("Certificates generated successfully.")
             else:
@@ -87,7 +88,7 @@ if uploaded_file and uploaded_template:
         if st.button("Generate Certificates"):
             if uploaded_template:
                 with st.spinner("Generating certificates..."):
-                    make_certificates_txt(temp_txt_path, "temp_template.png", output_dir, vertical_offset, font_size,
+                    make_certificates_txt(temp_txt_path, "temp_template.png", output_dir, vertical_offset, horizontal_offset, font_size,
                                           font_names[font_choice])
                     st.success("Certificates generated successfully.")
             else:
