@@ -74,6 +74,8 @@ if uploaded_file and uploaded_template:
                         with open('certificates.zip', 'rb') as f:
                             st.download_button('Download ZIP', f, file_name='certificates.zip')
                         shutil.rmtree(output_dir)  # Clean up temporary folder
+                        if os.path.exists('certificates.zip'):
+                            os.remove('certificates.zip')  # Delete the ZIP file after download
             else:
                 st.error("Please select a column and upload a template.")
 
@@ -95,6 +97,8 @@ if uploaded_file and uploaded_template:
                         with open('certificates.zip', 'rb') as f:
                             st.download_button('Download ZIP', f, file_name='certificates.zip')
                         shutil.rmtree(output_dir)  # Clean up temporary folder
+                        if os.path.exists('certificates.zip'):
+                            os.remove('certificates.zip')  # Delete the ZIP file after download
             else:
                 st.error("Please select a column and upload a template.")
 
@@ -115,6 +119,8 @@ if uploaded_file and uploaded_template:
                         with open('certificates.zip', 'rb') as f:
                             st.download_button('Download ZIP', f, file_name='certificates.zip')
                         shutil.rmtree(output_dir)  # Clean up temporary folder
+                        if os.path.exists('certificates.zip'):
+                            os.remove('certificates.zip')  # Delete the ZIP file after download
             else:
                 st.error("Please upload a template.")
 else:
