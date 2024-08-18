@@ -16,7 +16,7 @@ uploaded_file = st.file_uploader("Choose a file", type=["xlsx", "csv", "txt"])
 uploaded_template = st.file_uploader("Choose a template image", type=["png", "jpg", "jpeg"])
 
 # Input for custom output directory
-save_option = st.radio("Choose how to save the certificates", ('Save in Folder', 'Download as ZIP'))
+save_option = st.radio("Choose how to save the certificates", ('Download as ZIP', 'Save in Folder(When Running locally)'))
 if save_option == 'Save in Folder':
     output_dir = st.text_input("Enter the output directory", "out")
 else:
